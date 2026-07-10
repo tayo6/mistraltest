@@ -1,0 +1,31 @@
+[package]
+name = "monodelay-knobs"
+version = "0.1.0"
+edition = "2021"
+authors = ["MonoDelay-1"]
+description = "Interactive knob controls with angular gradient arcs for audio plugins"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+eframe = { version = "0.27", features = ["default_fonts", "wgpu"] }
+egui = "0.27"
+epaint = "0.27"
+
+[profile.release]
+opt-level = 2
+lto = "thin"
+strip = true
+
+[profile.release-with-debug]
+inherits = "release"
+debug = true
+strip = false
+
+[[bin]]
+name = "monodelay-knobs"
+path = "src/main.rs"
+
+[lib]
+name = "monodelay_knobs"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]

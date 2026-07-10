@@ -1,0 +1,12 @@
+# WASM build artifacts
+pkg/
+*.wasm
+*.js
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

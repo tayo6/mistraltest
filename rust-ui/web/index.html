@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonoDelay-1 Knobs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+        
+        #wasm-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .loading {
+            color: #fff;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #888;
+            font-size: 14px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">MonoDelay-1 Controls</div>
+    <div id="canvas-container">
+        <canvas id="wasm-canvas"></canvas>
+    </div>
+    <div class="instructions">Drag the knobs to adjust values (0-100)</div>
+    <div class="footer">Powered by Rust + eframe</div>
+    
+    <script type="module">
+        // WASM initialization
+        async function initWasm() {
+            const canvas = document.getElementById('wasm-canvas');
+            const container = document.getElementById('canvas-container');
+            
+            // Set canvas size to match container
+            function resizeCanvas() {
+                const width = container.clientWidth * 0.9;
+                const height = container.clientHeight * 0.8;
+                canvas.width = width * window.devicePixelRatio;
+                canvas.height = height * window.devicePixelRatio;
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            try {
+                // Import the WASM module
+                const wasmModule = await import('./pkg/monodelay_knobs.js');
+                
+                // Start the eframe app
+                await wasmModule.default(canvas.id);
+                
+                // Hide loading state
+                document.querySelector('.loading')?.remove();
+                
+            } catch (error) {
+                console.error('Failed to load WASM:', error);
+                canvas.parentElement.innerHTML = `
+                    <div style="color: #ff4444; text-align: center; padding: 40px;">
+                        <h2>Error Loading Application</h2>
+                        <p>${error.message}</p>
+                        <p style="font-size: 12px; color: #888;">
+                            Make sure you've built the WASM module with:<br>
+                            <code>cargo build --target wasm32-unknown-unknown --release</code>
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Start initialization
+        initWasm().catch(console.error);
+    </script>
+</body>
+</html>
