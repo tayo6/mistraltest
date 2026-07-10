@@ -1,0 +1,6 @@
+# In your mistraltest Codespace
+mkdir -p .github/workflows
+curl -o .github/workflows/rust-wasm.yml https://raw.githubusercontent.com/tayo6/MonoDelay-1/main/.github/workflows/rust-wasm.yml
+git add .github/workflows/rust-wasm.yml
+git commit -m "Add WASM build workflow"
+git push
